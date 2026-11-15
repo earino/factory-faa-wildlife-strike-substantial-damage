@@ -1,0 +1,396 @@
+{
+  "checks": [
+    {
+      "check": "publisher ZIP downloaded through source_io.fetch",
+      "observed": {
+        "path": "/tmp/factory-source-t5ng2al4/database_excel.zip",
+        "bytes": 133416473
+      },
+      "expected": "nonempty ZIP archive from https://wildlife.faa.gov/assets/database_excel.zip",
+      "passed": true
+    },
+    {
+      "check": "largest XLSX workbook member selected from publisher ZIP",
+      "observed": {
+        "member": "Public.xlsx",
+        "bytes": 159318294
+      },
+      "expected": "a nonempty .xlsx strike workbook inside the ZIP",
+      "passed": true
+    },
+    {
+      "check": "required source fields resolved from workbook header",
+      "observed": {
+        "sheet": "Sheet1",
+        "archive_member": "Public.xlsx",
+        "resolved_fields": {
+          "index_nr": "INDEX_NR",
+          "incident_date": "INCIDENT_DATE",
+          "state": "STATE",
+          "ac_class": "AC_CLASS",
+          "ac_mass": "AC_MASS",
+          "num_engs": "NUM_ENGS",
+          "type_eng": "TYPE_ENG",
+          "phase_of_flt": "PHASE_OF_FLIGHT",
+          "height_agl": "HEIGHT",
+          "speed_kts": "SPEED",
+          "distance_nm": "DISTANCE",
+          "birds_struck": "NUM_STRUCK",
+          "birds_seen": "NUM_SEEN",
+          "size": "SIZE",
+          "warned": "WARNED",
+          "time_of_day": "TIME_OF_DAY",
+          "sky": "SKY",
+          "precip": "PRECIPITATION",
+          "opid": "OPID",
+          "damage": "DAMAGE_LEVEL"
+        }
+      },
+      "expected": "documented FAA strike-report fields for record id, incident date, state, aircraft descriptors, encounter geometry, pilot observations, weather, operator identifier and the manager-selected damage code",
+      "passed": true
+    },
+    {
+      "check": "DAMAGE code coverage and blank exclusion",
+      "observed": {
+        "all_codes": {
+          "D": 95,
+          "M": 8809,
+          "M?": 9015,
+          "N": 210478,
+          "S": 4426,
+          "__blank__": 127470
+        },
+        "blank_damage_rows_in_base_population": 17029,
+        "unexpected_codes_outside_population": {}
+      },
+      "expected": "allowed label codes N, M, M-question, S and D; blank DAMAGE dropped and never labelled 0; a nonblank code outside the allowed set is recorded when it sits outside the frozen population and fails construction when it sits inside it",
+      "passed": true
+    },
+    {
+      "check": "frozen population filters applied",
+      "observed": {
+        "included_rows": 142871,
+        "excluded_counts": {
+          "invalid_date": 0,
+          "outside_date": 83178,
+          "outside_state": 40235,
+          "no_aircraft": 76980,
+          "blank_damage": 17029
+        }
+      },
+      "expected": "incident_date from 1990-01-01 through 2022-12-31; state in the 50 U.S. states or DC; at least one of ac_class or ac_mass present; allowed DAMAGE code; nonempty INDEX_NR",
+      "passed": true
+    },
+    {
+      "check": "stable index_nr present for every included row",
+      "observed": {
+        "missing_id_count": 0,
+        "samples": []
+      },
+      "expected": "nonempty INDEX_NR on every included source row",
+      "passed": true
+    },
+    {
+      "check": "included INDEX_NR values are unique",
+      "observed": {
+        "duplicate_count": 0,
+        "samples": []
+      },
+      "expected": "zero duplicate stable IDs across train, eval and holdout",
+      "passed": true
+    },
+    {
+      "check": "OPID tokens outside documented operator categories are left missing",
+      "observed": {
+        "unrecognized_opid_rows": 3896,
+        "samples": [
+          {
+            "index_nr": "608254",
+            "opid": "UNKC"
+          },
+          {
+            "index_nr": "608271",
+            "opid": "UNKC"
+          },
+          {
+            "index_nr": "608284",
+            "opid": "1AWE"
+          },
+          {
+            "index_nr": "608320",
+            "opid": "1AWE"
+          },
+          {
+            "index_nr": "608442",
+            "opid": "FLG*"
+          },
+          {
+            "index_nr": "608449",
+            "opid": "FLG*"
+          },
+          {
+            "index_nr": "608582",
+            "opid": "UNKC"
+          },
+          {
+            "index_nr": "608594",
+            "opid": "1AWE"
+          },
+          {
+            "index_nr": "608601",
+            "opid": "1AAH"
+          },
+          {
+            "index_nr": "608622",
+            "opid": "1AAH"
+          }
+        ],
+        "distinct_operator_class_values": [
+          "",
+          "BUS",
+          "GOV",
+          "PVT",
+          "airline"
+        ],
+        "stray_values": []
+      },
+      "expected": "operator_class limited to airline for a three-letter operator code, BUS, PVT, GOV, MIL, or blank; a token matching no documented category receives no class value instead of a guessed one",
+      "passed": true
+    },
+    {
+      "check": "NUM_STRUCK and NUM_SEEN encoded as the published ordinal animal-number bands",
+      "kind": "unit",
+      "observed": {
+        "birds_struck_values": {
+          "(missing)": 345,
+          "1": 120993,
+          "11-100": 1184,
+          "2-10": 20305,
+          ">100": 44
+        },
+        "birds_seen_values": {
+          "(missing)": 64185,
+          "1": 46521,
+          "11-100": 6162,
+          "2-10": 25210,
+          ">100": 793
+        },
+        "raw_tokens_birds_struck": {
+          "(blank)": 345,
+          "1": 120993,
+          "11-100": 1184,
+          "2-10": 20305,
+          "MORE THAN 100": 44
+        },
+        "raw_tokens_birds_seen": {
+          "(blank)": 64185,
+          "1": 46521,
+          "11-100": 6162,
+          "2-10": 25210,
+          "MORE THAN 100": 793
+        },
+        "tokens_beyond_first_40_distinct": {
+          "birds_struck": 0,
+          "birds_seen": 0
+        },
+        "tokens_treated_as_missing": {
+          "birds_struck": {},
+          "birds_seen": {}
+        },
+        "unexpected_tokens_in_population": {},
+        "unexpected_samples": {}
+      },
+      "expected": "the strike report asks for animal numbers in the bands 1, 2-10, 11-100 and more than 100, so NUM_STRUCK and NUM_SEEN are ordinal category fields rather than counts; emitted values are the band labels plus a zero band and a single-animal band, a raw integer is folded into the band that contains it, a blank stays missing and is never zero, and any other nonblank token inside the frozen population fails construction",
+      "passed": true
+    },
+    {
+      "check": "PRECIPITATION no-precipitation category retained as a value",
+      "observed": {
+        "top_values": {
+          "NONE": 97976,
+          "(missing)": 35843,
+          "RAIN": 6209,
+          "FOG": 2135,
+          "SNOW": 396,
+          "FOG, RAIN": 272,
+          "RAIN, SNOW": 21,
+          "FOG, SNOW": 13,
+          "FOG, RAIN, SNOW": 6
+        },
+        "distinct_values": 9,
+        "no_precipitation_rows": 97976,
+        "raw_none_tokens_by_field": {
+          "precip": 97976,
+          "size": 0,
+          "sky": 0,
+          "time_of_day": 0,
+          "warned": 0
+        }
+      },
+      "expected": "the strike report lists None alongside Fog, Rain and Snow for precipitation, so the NONE code is the documented no-precipitation category and must be emitted as a value rather than folded into missing; only a blank field stays missing, and NONE seen in other coded fields is counted for audit",
+      "passed": true
+    },
+    {
+      "check": "every declared feature has nonempty constructed coverage",
+      "observed": {
+        "ac_mass": 142646,
+        "ac_class": 142662,
+        "num_engs": 142477,
+        "type_eng": 142420,
+        "phase_of_flt": 141845,
+        "height_agl": 121076,
+        "speed_kts": 81289,
+        "distance_nm": 89256,
+        "birds_struck": 142526,
+        "birds_seen": 78686,
+        "size": 129382,
+        "warned": 89292,
+        "time_of_day": 129280,
+        "sky": 111270,
+        "precip": 107028,
+        "month": 142871,
+        "state": 142871,
+        "operator_class": 138312
+      },
+      "expected": "each declared feature column has at least one nonmissing value; missing values stay missing and are never zero-filled",
+      "passed": true
+    },
+    {
+      "check": "fixed half-open chronological splits contain rows and positives",
+      "observed": {
+        "train": {
+          "rows": 84196,
+          "positives": 2851,
+          "min_date": "1990-01-02",
+          "max_date": "2013-12-31"
+        },
+        "eval": {
+          "rows": 33250,
+          "positives": 353,
+          "min_date": "2014-01-01",
+          "max_date": "2018-12-31"
+        },
+        "holdout": {
+          "rows": 25425,
+          "positives": 107,
+          "min_date": "2019-01-01",
+          "max_date": "2022-12-31"
+        }
+      },
+      "expected": "train 1990-01-01 to 2013-12-31; eval 2014-01-01 to 2018-12-31; holdout 2019-01-01 to 2022-12-31; each split nonempty with at least one positive",
+      "passed": true
+    },
+    {
+      "check": "written CSV headers and row counts match the frozen schema",
+      "observed": {
+        "headers": {
+          "train": [
+            "index_nr",
+            "incident_date",
+            "ac_mass",
+            "ac_class",
+            "num_engs",
+            "type_eng",
+            "phase_of_flt",
+            "height_agl",
+            "speed_kts",
+            "distance_nm",
+            "birds_struck",
+            "birds_seen",
+            "size",
+            "warned",
+            "time_of_day",
+            "sky",
+            "precip",
+            "month",
+            "state",
+            "operator_class",
+            "substantial_damage"
+          ],
+          "eval": [
+            "index_nr",
+            "incident_date",
+            "ac_mass",
+            "ac_class",
+            "num_engs",
+            "type_eng",
+            "phase_of_flt",
+            "height_agl",
+            "speed_kts",
+            "distance_nm",
+            "birds_struck",
+            "birds_seen",
+            "size",
+            "warned",
+            "time_of_day",
+            "sky",
+            "precip",
+            "month",
+            "state",
+            "operator_class",
+            "substantial_damage"
+          ],
+          "holdout": [
+            "index_nr",
+            "incident_date",
+            "ac_mass",
+            "ac_class",
+            "num_engs",
+            "type_eng",
+            "phase_of_flt",
+            "height_agl",
+            "speed_kts",
+            "distance_nm",
+            "birds_struck",
+            "birds_seen",
+            "size",
+            "warned",
+            "time_of_day",
+            "sky",
+            "precip",
+            "month",
+            "state",
+            "operator_class",
+            "substantial_damage"
+          ]
+        },
+        "row_counts": {
+          "train": 84196,
+          "eval": 33250,
+          "holdout": 25425
+        }
+      },
+      "expected": {
+        "headers": [
+          "index_nr",
+          "incident_date",
+          "ac_mass",
+          "ac_class",
+          "num_engs",
+          "type_eng",
+          "phase_of_flt",
+          "height_agl",
+          "speed_kts",
+          "distance_nm",
+          "birds_struck",
+          "birds_seen",
+          "size",
+          "warned",
+          "time_of_day",
+          "sky",
+          "precip",
+          "month",
+          "state",
+          "operator_class",
+          "substantial_damage"
+        ],
+        "row_counts": {
+          "train": 84196,
+          "eval": 33250,
+          "holdout": 25425
+        }
+      },
+      "passed": true
+    }
+  ]
+}
