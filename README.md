@@ -15,6 +15,14 @@ configs:
     path: extract/private/holdout.csv
 ---
 
+<!-- dataset-factory:links -->
+**Dataset Factory · v-d654c9f4ddfcf60c**
+
+[Dataset website](https://earino.github.io/factory-faa-wildlife-strike-substantial-damage/versions/v-d654c9f4ddfcf60c/) · [GitHub release](https://github.com/earino/factory-faa-wildlife-strike-substantial-damage/releases/tag/v-d654c9f4ddfcf60c) · [Hugging Face](https://huggingface.co/datasets/earino/factory-faa-wildlife-strike-substantial-damage/tree/v-d654c9f4ddfcf60c) · [Catalogue](https://earino.github.io/dataset-factory-site/)
+
+Artifact: ae75ab5acd1b27aeb29c4d414aa78610d797fe43068062bafd1574bb272dc2f9
+<!-- /dataset-factory:links -->
+
 # Will a reported U.S. wildlife strike substantially damage the aircraft? Forward severity prediction from strike-time circumstances in the FAA National Wildlife Strike Database
 
 Given only what is known when a wildlife strike is reported, will the aircraft be assessed as substantially damaged or destroyed (ICAO major damage)?
